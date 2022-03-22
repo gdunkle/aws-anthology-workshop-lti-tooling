@@ -1,0 +1,21 @@
+{
+  "name": "aws-anthology-workshop-lti-tooling",
+  "version": "1.0.0",
+  "description": "CDK project with code and infrastructure to create and host an LTI Tool application on AWS.",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gdunkle/aws-anthology-workshop-lti-tooling.git"
+  },
+  "keywords": [],
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/gdunkle/aws-anthology-workshop-lti-tooling/issues"
+  },
+  "homepage": "https://github.com/gdunkle/aws-anthology-workshop-lti-tooling#readme"
+}
