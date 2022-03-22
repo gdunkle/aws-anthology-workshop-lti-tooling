@@ -8,12 +8,12 @@
   "license": "Apache-2.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npm run build -w client && npm run build -w cdk"
   },
   "workspaces":[
     "cdk",
     "client",
-    "lamda"
+    "lambda"
   ],
   "repository": {
     "type": "git",
