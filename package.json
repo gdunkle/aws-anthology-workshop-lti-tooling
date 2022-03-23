@@ -8,9 +8,9 @@
   "license": "Apache-2.0",
   "main": "index.js",
   "scripts": {
-    "build": "npm run build -w client && npm run build -w cdk"
+    "build": "npm run build -w client && npm run build -w lambda && npm run build -w cdk"
   },
-  "workspaces":[
+  "workspaces": [
     "cdk",
     "client",
     "lambda"
@@ -22,5 +22,22 @@
   "bugs": {
     "url": "https://github.com/gdunkle/aws-anthology-workshop-lti-tooling/issues"
   },
-  "homepage": "https://github.com/gdunkle/aws-anthology-workshop-lti-tooling#readme"
+  "homepage": "https://github.com/gdunkle/aws-anthology-workshop-lti-tooling#readme",
+  "dependencies": {
+    "aws-sdk": "^2.1098.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.93",
+    "@types/jest": "^27.4.1",
+    "@types/node": "^17.0.22",
+    "@types/ramda": "^0.28.2",
+    "clean-webpack-plugin": "^4.0.0",
+    "jest": "^27.5.1",
+    "prettier": "^2.6.0",
+    "ts-jest": "^27.1.3",
+    "ts-loader": "^9.2.8",
+    "typescript": "^4.6.2",
+    "webpack": "^5.70.0",
+    "webpack-cli": "^4.9.2"
+  }
 }
