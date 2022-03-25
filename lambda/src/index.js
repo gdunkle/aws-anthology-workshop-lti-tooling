@@ -30,6 +30,13 @@ const PRIMARY_KEY = process.env.PRIMARY_KEY || '';
 const db = new AWS.DynamoDB.DocumentClient();
 const handler = async () => {
     return { statusCode: 200, body: JSON.stringify("Return from Lambda") };
+    //   return {
+    //     statusCode: process.env.HTTP_RESPONSE,
+    //     headers: {
+    //         "Location": process.env.NEW_DOMAIN + requestUri
+    //     },
+    //     body: null
+    //   }
     //   const requestedItemId = event.pathParameters.id;
     //   if (!requestedItemId) {
     //     return { statusCode: 400, body: `Error: You are missing the path parameter id` };
