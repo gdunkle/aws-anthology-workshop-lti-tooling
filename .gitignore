@@ -1,3 +1,9 @@
+# Ignore transpiled .JS files under TypeScript projects (explicit add required)
+/cdk/**/*.js
+!/cdk/jest.config.js
+/lambda/**/*.js
+!/lambda/jest.config.js
+
 # VSCode extension
 
 # Store launch config in repo but not settings
