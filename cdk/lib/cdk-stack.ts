@@ -1,13 +1,13 @@
-import {Duration, Stack, StackProps} from 'aws-cdk-lib';
+import { Duration, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import {NodejsFunction} from "aws-cdk-lib/aws-lambda-nodejs";
-import {Runtime} from "aws-cdk-lib/aws-lambda";
+import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
+import { Runtime } from "aws-cdk-lib/aws-lambda";
 import * as path from "path";
-import {RetentionDays} from "aws-cdk-lib/aws-logs";
-import {LambdaRestApi} from "aws-cdk-lib/aws-apigateway";
+import { RetentionDays } from "aws-cdk-lib/aws-logs";
+import { LambdaRestApi } from "aws-cdk-lib/aws-apigateway";
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
-export class CdkStack extends Stack {
+export class LTIToolCdkStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
     const lambda = new NodejsFunction(this, "lti-lambda", {
@@ -18,7 +18,7 @@ export class CdkStack extends Stack {
       entry: path.join(__dirname, `/../../lambda/src/index.ts`),
       logRetention: RetentionDays.ONE_MONTH
     });
-    new LambdaRestApi(this,"lti-api",{
+    new LambdaRestApi(this, "lti-api", {
       handler: lambda,
       proxy: true
     })

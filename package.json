@@ -8,7 +8,8 @@
   "license": "Apache-2.0",
   "main": "index.js",
   "scripts": {
-    "build": "npm run build -w client && npm run build -w lambda && npm run build -w cdk"
+    "build": "npm run build -w client && npm run build -w lambda && npm run build -w cdk",
+    "cdk": "npm run cdk -w cdk"
   },
   "workspaces": [
     "cdk",
