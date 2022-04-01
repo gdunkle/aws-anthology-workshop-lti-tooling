@@ -8,6 +8,7 @@
   "license": "Apache-2.0",
   "main": "index.js",
   "scripts": {
+    "start": "npm run start -w client ",
     "build": "npm run build -w client && npm run build -w lambda && npm run build -w cdk",
     "cdk": "npm run cdk -w cdk"
   },
@@ -25,7 +26,8 @@
   },
   "homepage": "https://github.com/gdunkle/aws-anthology-workshop-lti-tooling#readme",
   "dependencies": {
-    "aws-sdk": "^2.1098.0"
+    "aws-sdk": "^2.1098.0",
+    "formik": "^2.2.9"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.93",
