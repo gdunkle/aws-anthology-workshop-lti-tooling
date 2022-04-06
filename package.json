@@ -6,16 +6,15 @@
   "private": true,
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
-  "main": "index.js",
   "scripts": {
     "start": "npm run start -w client ",
-    "build": "npm run build -w client && npm run build -w lambda && npm run build -w cdk",
+    "build": "npm run build -w client && npm run build -w lambdas && npm run build -w cdk",
     "cdk": "npm run cdk -w cdk"
   },
   "workspaces": [
     "cdk",
     "client",
-    "lambda"
+    "lambdas"
   ],
   "repository": {
     "type": "git",

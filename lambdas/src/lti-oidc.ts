@@ -8,7 +8,7 @@ const db = new AWS.DynamoDB.DocumentClient();
 
 export const handler = async (): Promise<APIGatewayProxyResult> => {
 
-  return { statusCode: 200, body: JSON.stringify("Return from Lambda") };
+  return { statusCode: 200, body: JSON.stringify("Return from OIDC Lambda") };
 
 //   return {
 //     statusCode: process.env.HTTP_RESPONSE,

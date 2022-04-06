@@ -1,8 +1,8 @@
 # Ignore transpiled .JS files under TypeScript projects (explicit add required)
 /cdk/**/*.js
 !/cdk/jest.config.js
-/lambda/**/*.js
-!/lambda/jest.config.js
+/lambdas/**/*.js
+!/lambdas/jest.config.js
 
 # VSCode extension
 
