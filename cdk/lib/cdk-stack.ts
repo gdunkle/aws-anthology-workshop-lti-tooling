@@ -49,7 +49,8 @@ export class LTIToolCdkStack extends Stack {
       .addMethod("POST", new LambdaIntegration(lambdaLTILaunch));
 
 
-
+    //TODO: configure S3 and CF permissions
+    //ref: https://github.com/aws-samples/aws-cdk-examples/blob/master/typescript/static-site/static-site.ts#L57
     const clientBucket = new Bucket(this, "clientBucket", {
       accessControl: BucketAccessControl.PRIVATE,
     })
