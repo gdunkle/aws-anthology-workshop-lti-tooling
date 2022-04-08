@@ -2,17 +2,32 @@ import { Bucket, BucketAccessControl } from "aws-cdk-lib/aws-s3";
 import { BucketDeployment, Source } from "aws-cdk-lib/aws-s3-deployment";
 import { Construct } from "constructs";
 import { Distribution, OriginAccessIdentity } from "aws-cdk-lib/aws-cloudfront";
-import { Duration, Stack, StackProps } from "aws-cdk-lib";
+import { Duration, RemovalPolicy, Stack, StackProps } from "aws-cdk-lib";
 import { LambdaIntegration, LambdaRestApi } from "aws-cdk-lib/aws-apigateway";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { RetentionDays } from "aws-cdk-lib/aws-logs";
 import { Runtime } from "aws-cdk-lib/aws-lambda";
 import { S3Origin } from "aws-cdk-lib/aws-cloudfront-origins";
+import { Table, AttributeType, StreamViewType, BillingMode } from 'aws-cdk-lib/aws-dynamodb';
 import * as path from "path";
 
 export class LTIToolCdkStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
+
+
+    //#region LTI Ingress 
+    const dynamoTable = new Table(this, 'LTITable', {
+      partitionKey: { name: 'PK', type: AttributeType.STRING },
+      billingMode: BillingMode.PAY_PER_REQUEST,
+      timeToLiveAttribute: "ttl",
+    
+
+      // The default removal policy is RETAIN, which means that cdk destroy will not attempt to delete
+      // the new table, and it will remain in your account until manually deleted. By setting the policy to
+      // DESTROY, cdk destroy will delete the table (even if it has data in it)
+      removalPolicy: RemovalPolicy.DESTROY, // NOT recommended for production code
+    });
 
     const lambdaOIDC = new NodejsFunction(this, "lti-oidc", {
       memorySize: 256,
@@ -20,7 +35,12 @@ export class LTIToolCdkStack extends Stack {
       runtime: Runtime.NODEJS_14_X,
       handler: "handler",
       entry: path.join(__dirname, "/../../lambdas/src/lti-oidc.ts"),
-      logRetention: RetentionDays.ONE_MONTH
+      logRetention: RetentionDays.ONE_MONTH,
+      environment: {
+        PRIMARY_KEY: 'PK',
+        TABLE_NAME: dynamoTable.tableName,
+        STATE_TTL: Duration.hours(2).toSeconds().toString(), // Auto expire STATE records after two hours
+      },
     });
 
     const lambdaLTILaunch = new NodejsFunction(this, "lti-launch", {
@@ -29,7 +49,11 @@ export class LTIToolCdkStack extends Stack {
       runtime: Runtime.NODEJS_14_X,
       handler: "handler",
       entry: path.join(__dirname, "/../../lambdas/src/lti-launch.ts"),
-      logRetention: RetentionDays.ONE_MONTH
+      logRetention: RetentionDays.ONE_MONTH,
+      environment: {
+        PRIMARY_KEY: 'PK',
+        TABLE_NAME: dynamoTable.tableName,
+      },
     });
 
     const apiLTI = new LambdaRestApi(this, "lti-api", {
@@ -42,12 +66,15 @@ export class LTIToolCdkStack extends Stack {
       allowMethods: [ "GET", "PUT" ]
     });
 
-    apiLTI.root.addResource("oidc")
+    
+    apiLTI.root.addResource("login")
       .addMethod("POST", new LambdaIntegration(lambdaOIDC));
     
     apiLTI.root.addResource("lti13")
       .addMethod("POST", new LambdaIntegration(lambdaLTILaunch));
 
+    //#endregion
+    
 
     //TODO: configure S3 and CF permissions
     //ref: https://github.com/aws-samples/aws-cdk-examples/blob/master/typescript/static-site/static-site.ts#L57

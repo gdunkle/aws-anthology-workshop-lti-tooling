@@ -1,13 +1,13 @@
 import * as AWS from 'aws-sdk';
-import { APIGatewayProxyResult } from "aws-lambda";
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 
 const TABLE_NAME = process.env.TABLE_NAME || '';
 const PRIMARY_KEY = process.env.PRIMARY_KEY || '';
 
 const db = new AWS.DynamoDB.DocumentClient();
 
-export const handler = async (): Promise<APIGatewayProxyResult> => {
-
+export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+  console.info("EVENT\n" + JSON.stringify(event, null, 2));
   return { statusCode: 200, body: JSON.stringify("Return from LTI Launch Lambda") };
 
 //   return {
