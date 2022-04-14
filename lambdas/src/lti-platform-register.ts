@@ -32,7 +32,8 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
   try {
 
     //Set the primary key
-    config.PK = `CONFIG#${config.client_id}#${config.iss}#${config.lti_deployment_id}`;
+    //config.PK = 
+    (config as any)[PRIMARY_KEY] = `CONFIG#${config.client_id}#${config.iss}#${config.lti_deployment_id}`;
 
     const configParams = {
       TableName: TABLE_NAME,
