@@ -1,16 +1,17 @@
+import { CfnOutput, Duration, RemovalPolicy, Stack, StackProps } from "aws-cdk-lib";
 import { IRole, Policy, PolicyStatement, Role } from "aws-cdk-lib/aws-iam";
 import { Bucket, BucketAccessControl } from "aws-cdk-lib/aws-s3";
 import { BucketDeployment, Source } from "aws-cdk-lib/aws-s3-deployment";
-import { Construct } from "constructs";
-import { Distribution, OriginAccessIdentity } from "aws-cdk-lib/aws-cloudfront";
-import { Duration, RemovalPolicy, Stack, StackProps } from "aws-cdk-lib";
 import { LambdaIntegration, LambdaRestApi } from "aws-cdk-lib/aws-apigateway";
+import { Distribution, OriginAccessIdentity } from "aws-cdk-lib/aws-cloudfront";
+import { S3Origin } from "aws-cdk-lib/aws-cloudfront-origins";
+import { Table, AttributeType, StreamViewType, BillingMode } from "aws-cdk-lib/aws-dynamodb";
+import { Key, KeySpec, KeyUsage } from "aws-cdk-lib/aws-kms";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { RetentionDays } from "aws-cdk-lib/aws-logs";
 import { Architecture, Runtime } from "aws-cdk-lib/aws-lambda";
-import { S3Origin } from "aws-cdk-lib/aws-cloudfront-origins";
-import { Table, AttributeType, StreamViewType, BillingMode } from 'aws-cdk-lib/aws-dynamodb';
 import { ParameterType, StringParameter } from "aws-cdk-lib/aws-ssm";
+import { Construct } from "constructs";
 import * as path from "path";
 
 
@@ -20,7 +21,7 @@ export class LTIToolCdkStack extends Stack {
 
 
     //#region LTI Ingress 
-    const dynamoTable = new Table(this, 'LTITable', {
+    const dynamoTable = new Table(this, 'lti-table', {
       partitionKey: { name: 'PK', type: AttributeType.STRING },
       billingMode: BillingMode.PAY_PER_REQUEST,
       timeToLiveAttribute: "ttl",
@@ -94,7 +95,7 @@ export class LTIToolCdkStack extends Stack {
     apiLTI.root.addResource("platform")
       .addMethod("POST", new LambdaIntegration(lambdaPlatformRegister));
 
-    const paramAPIURL = new StringParameter(this, "lti_tooling_api_url", {
+    const paramAPIURL = new StringParameter(this, "lti-api-url", {
       type: ParameterType.STRING,
       parameterName: "/anthology/workshop/lti-tooling/api/url",
       stringValue: apiLTI.url
@@ -105,9 +106,8 @@ export class LTIToolCdkStack extends Stack {
     dynamoTable.grantWriteData(lambdaPlatformRegister);
     //Causes Circular Dependency, manually construct an inline policy and attach it to the execution role.
     //paramAPIURL.grantRead(lambdaOIDC);
-
-    const policy = new Policy(this, "lti_tool_lambda_read_ssm", {
-      policyName: "lti_tool_lambda_read_ssm",
+    const policy = new Policy(this, "lti-tooling-lambda-read-ssm", {
+      policyName: "lti_tooling_lambda_read_ssm",
       statements: [
         new PolicyStatement({
           actions: ['ssm:GetParameter'],
@@ -117,24 +117,38 @@ export class LTIToolCdkStack extends Stack {
     });
     
     policy.attachToRole(<IRole>lambdaOIDC.role);
+
+    new CfnOutput(this, "LTI FQDN", {
+      value: apiLTI.url,
+    });
     //#endregion
 
+    //Key material to use for JWT Signing and Verification
+    const asymmetricKey = new Key(this, "lti-asymmetric-key", {
+      keySpec: KeySpec.RSA_2048,         // Default to SYMMETRIC_DEFAULT
+      keyUsage: KeyUsage.SIGN_VERIFY,    // and ENCRYPT_DECRYPT
+      removalPolicy: RemovalPolicy.DESTROY,
+      pendingWindow: Duration.days(7),
+      alias: "alias/lti-tooling-asymmetric-key",
+      description: "KMS key for signing and verificartion of JSON Web Tokens (JWT)",
+      enableKeyRotation: false,
+    });
 
     //TODO: configure S3 and CF permissions
     //ref: https://github.com/aws-samples/aws-cdk-examples/blob/master/typescript/static-site/static-site.ts#L57
-    const clientBucket = new Bucket(this, "clientBucket", {
+    const clientBucket = new Bucket(this, "lti-client-bucket", {
       accessControl: BucketAccessControl.PRIVATE,
     })
 
-    new BucketDeployment(this, "BucketDeployment", {
+    new BucketDeployment(this, "lti-client-bucket-deployment", {
       destinationBucket: clientBucket,
       sources: [Source.asset(path.resolve(__dirname, "./../../client/build"))]
     })
 
-    const originAccessIdentity = new OriginAccessIdentity(this, "OriginAccessIdentity");
+    const originAccessIdentity = new OriginAccessIdentity(this, "lti-client-origin-access-identity");
     clientBucket.grantRead(originAccessIdentity);
 
-    new Distribution(this, "Distribution", {
+    new Distribution(this, "lti-client-distribution", {
       defaultRootObject: "index.html",
       defaultBehavior: {
         origin: new S3Origin(clientBucket, { originAccessIdentity }),
