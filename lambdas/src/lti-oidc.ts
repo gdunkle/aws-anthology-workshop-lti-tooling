@@ -49,9 +49,6 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     let nonce = uuidv4();
     API_URL = (await ssm.getParameter({ Name: '/anthology/workshop/lti-tooling/api/url' }).promise()).Parameter?.Value ?? ''
 
-
-    "www.disney.com/login?response_type=id_token&scope=openid&login_hint=loginhint"
-
     //concatinate OIDC URL for redirect.
     let redirect_url: string = config.auth_login_url +
         '?response_type=id_token' +
@@ -59,7 +56,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
         '&login_hint=' + login_hint +
         '&lti_message_hint=' + lti_message_hint +
         '&state=' + state +
-        '&redirect_uri=' + encodeURIComponent(API_URL) +
+        '&redirect_uri=' + encodeURIComponent(API_URL) + "lti13"
         '&client_id=' + client_id +
         '&nonce=' + nonce;
 
