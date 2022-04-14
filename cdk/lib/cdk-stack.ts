@@ -43,7 +43,7 @@ export class LTIToolCdkStack extends Stack {
       environment: {
         PRIMARY_KEY: 'PK',
         TABLE_NAME: dynamoTable.tableName,
-        STATE_TTL: Duration.minutes(2).toSeconds().toString(), // Auto expire STATE records after two hours
+        STATE_TTL: Duration.hours(2).toSeconds().toString(), // Auto expire STATE records after two hours
       },
     });
 
