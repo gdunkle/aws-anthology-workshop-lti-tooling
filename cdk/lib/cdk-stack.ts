@@ -95,7 +95,7 @@ export class LTIToolCdkStack extends Stack {
     apiLTI.root.addResource("platform")
       .addMethod("POST", new LambdaIntegration(lambdaPlatformRegister));
 
-    const paramAPIURL = new StringParameter(this, "lti-api-url", {
+    const paramAPIURL = new StringParameter(this, "lti_tooling_api_url", {
       type: ParameterType.STRING,
       parameterName: "/anthology/workshop/lti-tooling/api/url",
       stringValue: apiLTI.url
