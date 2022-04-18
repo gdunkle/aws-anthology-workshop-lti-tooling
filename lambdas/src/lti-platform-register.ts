@@ -1,49 +1,50 @@
 import * as AWS from 'aws-sdk';
 import { PutItemOutput } from 'aws-sdk/clients/dynamodb';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-
-import { PlatformConfig } from "./lti-definitions";
+import { LTIPlatform, LTIPlatformConfig, LTIPlatformStorage } from "./lti-platform";
+import { APIGatewayProxyHttpHelper } from "./lti-http-helper";
 
 const db = new AWS.DynamoDB.DocumentClient();
-
 const TABLE_NAME = process.env.TABLE_NAME || '';
 const PRIMARY_KEY = process.env.PRIMARY_KEY || '';
+
+const platformStorage: LTIPlatformStorage = {
+  PrimaryKey: PRIMARY_KEY,
+  TableName: TABLE_NAME,
+  DDBClient: db
+};
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   console.info("EVENT\n" + JSON.stringify(event, null, 2));
 
-  const config: PlatformConfig = {
+  let config: LTIPlatformConfig = {
     [PRIMARY_KEY]: "",
-    auth_token_url: event?.queryStringParameters?.auth_token_url ?? "",
-    auth_login_url: event?.queryStringParameters?.auth_login_url ?? "",
-    client_id: event?.queryStringParameters?.client_id ?? "",
-    lti_deployment_id: event?.queryStringParameters?.lti_deployment_id ?? "",
-    iss: event?.queryStringParameters?.iss ?? "",
-    key_set_url:  event?.queryStringParameters?.key_set_url ?? ""
+    auth_token_url: APIGatewayProxyHttpHelper.ValueFromRequest(event, "auth_token_url"),
+    auth_login_url: APIGatewayProxyHttpHelper.ValueFromRequest(event, "auth_login_url"),
+    client_id: APIGatewayProxyHttpHelper.ValueFromRequest(event, "client_id"),
+    lti_deployment_id: APIGatewayProxyHttpHelper.ValueFromRequest(event, "lti_deployment_id"),
+    iss: APIGatewayProxyHttpHelper.ValueFromRequest(event, "iss"),
+    key_set_url: APIGatewayProxyHttpHelper.ValueFromRequest(event, "key_set_url"),
   };
 
-  if(!config.auth_token_url || !config.auth_login_url || !config.client_id ||!config.lti_deployment_id || !config.iss || !config.key_set_url){
-    return { 
-      statusCode: 400, 
+  if (!config.auth_token_url || !config.auth_login_url || !config.client_id || !config.lti_deployment_id || !config.iss || !config.key_set_url) {
+    return {
+      statusCode: 400,
       body: JSON.stringify("InvalidParameterException")
     };
   }
-  
+
   try {
 
-    //Set the primary key
-    (config as any)[PRIMARY_KEY] = `CONFIG#${config.client_id}#${config.iss}#${config.lti_deployment_id}`;
+    //Instantiate a new platform instance with the required input pararm
+    let platform: LTIPlatform = new LTIPlatform(platformStorage, config);
+    //Persist to storage and return value from storage
+    let ret = (await platform.save() as LTIPlatformConfig);
 
-    const configParams = {
-      TableName: TABLE_NAME,
-      Item: config
-    };
-
-    const response:PutItemOutput = await db.put(configParams).promise();
-
-    return { 
-      statusCode: 200, 
-      body: JSON.stringify("Configuration Accepted"),
+    //Return a JSON representation of the Configuration, omitting the PK property as that should not be exposed.
+    return {
+      statusCode: 200,
+      body: JSON.stringify(config as Omit<LTIPlatformConfig, "PK">),
     };
 
   } catch (error) {

@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/gdunkle/aws-anthology-workshop-lti-tooling#readme",
   "dependencies": {
+    "aws-jwt-verify": "^3.0.0",
     "aws-sdk": "^2.1098.0",
     "formik": "^2.2.9",
     "uuid": "^8.3.2"

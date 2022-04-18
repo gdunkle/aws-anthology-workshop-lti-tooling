@@ -1,10 +1,9 @@
 import * as AWS from 'aws-sdk';
-import { GetItemOutput, PutItemInput, PutItemOutput } from 'aws-sdk/clients/dynamodb';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { v4 as uuidv4 } from 'uuid';
-import { GetParameterResult } from 'aws-sdk/clients/ssm';
 import { AWSError } from 'aws-sdk';
-import { PlatformConfig } from "./lti-definitions";
+import { LTIPlatform, LTIPlatformConfig, LTIPlatformStorage } from "./lti-platform";
+import { LTIState, LTIStateStorage } from "./lti-state";
 
 const db = new AWS.DynamoDB.DocumentClient();
 const ssm = new AWS.SSM();
@@ -13,6 +12,18 @@ const TABLE_NAME = process.env.TABLE_NAME || '';
 const PRIMARY_KEY = process.env.PRIMARY_KEY || '';
 const STATE_TTL = process.env.STATE_TTL || '';
 let API_URL = process.env.API_URL || '';
+
+const stateStorage: LTIStateStorage = {
+  PrimaryKey: PRIMARY_KEY,
+  TableName: TABLE_NAME,
+  TTL: +STATE_TTL,
+  DDBClient: db
+};
+const platformStorage: LTIPlatformStorage = {
+  PrimaryKey: PRIMARY_KEY,
+  TableName: TABLE_NAME,
+  DDBClient: db
+};
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   console.info("EVENT\n" + JSON.stringify(event, null, 2));
@@ -44,8 +55,15 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
   //Deployment ID
   
   try {
-    let config = (await getPlatformConfig(client_id, iss, lti_deployment_id) as unknown as PlatformConfig);
-    let state = (await generateStatePersisted());
+    //Load the platform configuration
+    let platform = new LTIPlatform(platformStorage);
+    let config = (await platform.load(client_id, iss, lti_deployment_id) as unknown as LTIPlatformConfig);
+
+    //Initialize a new state for this request, and persist it to storage
+    let state = new LTIState(stateStorage);
+    await state.save();
+
+
     let nonce = uuidv4();
     API_URL = (await ssm.getParameter({ Name: '/anthology/workshop/lti-tooling/api/url' }).promise()).Parameter?.Value ?? ''
 
@@ -55,7 +73,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
         '&scope=openid' +
         '&login_hint=' + login_hint +
         '&lti_message_hint=' + lti_message_hint +
-        '&state=' + state +
+        '&state=' + state.id +
         '&redirect_uri=' + encodeURIComponent(API_URL) + "lti13"
         '&client_id=' + client_id +
         '&nonce=' + nonce;
@@ -64,7 +82,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
       statusCode: 302, 
       body: JSON.stringify("Return from OIDC Lambda"),
       multiValueHeaders: {
-        "Set-Cookie": [`state=${state}`]
+        "Set-Cookie": [`state=${state.id}; SameSite=None; Secure; HttpOnly`]
       },
       headers: {
         "Location": redirect_url
@@ -75,45 +93,3 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     return { statusCode: 500, body: JSON.stringify(error) };
   }
 };
-
-async function getPlatformConfig(client_id: string, iss: string, lti_deployment_id?: string): Promise<PlatformConfig | void> {
-  const configParams = {
-    TableName: TABLE_NAME,
-    Key: {
-      [PRIMARY_KEY]: `CONFIG#${client_id}#${iss}#${lti_deployment_id}`,
-    }
-  };
-  
-  try {
-    const response:GetItemOutput = await db.get(configParams).promise();
-    if (response.Item) {
-      let config: PlatformConfig = JSON.parse(JSON.stringify(response.Item));
-      return config;
-    } else {
-      console.log(`Error locating Platform Configuration for ${client_id}#${iss}#${lti_deployment_id}.`);
-      throw new Error(`Error locating Platform Configuration for ${client_id}#${iss}#${lti_deployment_id}.`);
-    }
-  } catch (error) {
-    console.log(`Error retrieving Platform Configuration for ${client_id}#${iss}#${lti_deployment_id}. ${JSON.stringify(error)}`);
-    throw new Error(`Error retrieving Platform Configuration for ${client_id}#${iss}#${lti_deployment_id}. ${JSON.stringify(error)}`);
-  }
-}
-
-async function generateStatePersisted(): Promise<string | void> {
-  let state = uuidv4();
-  let STATE_ITEM_TTL = (Math.floor(+new Date() / 1000) + +STATE_TTL);
-  const stateParams = {
-    TableName: TABLE_NAME,
-    Item: {
-      [PRIMARY_KEY]: `STATE#${state}`,
-      ttl: STATE_ITEM_TTL  //this will auto expire the state in DDB
-    }
-  };
-  
-  try {
-    const response:PutItemOutput = await db.put(stateParams).promise();
-    return state;
-  } catch (error) {
-    throw new Error("Error persisting state. " + JSON.stringify(error));
-  }
-}
