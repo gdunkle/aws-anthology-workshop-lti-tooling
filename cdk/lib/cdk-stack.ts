@@ -42,7 +42,7 @@ export class LTIToolCdkStack extends Stack {
       entry: path.join(__dirname, "/../../lambdas/src/lti-oidc.ts"),
       logRetention: RetentionDays.ONE_MONTH,
       environment: {
-        PRIMARY_KEY: 'PK',
+        PARTITION_KEY: 'PK',
         TABLE_NAME: dynamoTable.tableName,
         STATE_TTL: Duration.hours(2).toSeconds().toString(), // Auto expire STATE records after two hours
       },
@@ -57,7 +57,7 @@ export class LTIToolCdkStack extends Stack {
       entry: path.join(__dirname, "/../../lambdas/src/lti-launch.ts"),
       logRetention: RetentionDays.ONE_MONTH,
       environment: {
-        PRIMARY_KEY: 'PK',
+        PARTITION_KEY: 'PK',
         TABLE_NAME: dynamoTable.tableName,
       },
     });
@@ -71,7 +71,7 @@ export class LTIToolCdkStack extends Stack {
       entry: path.join(__dirname, "/../../lambdas/src/lti-platform-register.ts"),
       logRetention: RetentionDays.ONE_MONTH,
       environment: {
-        PRIMARY_KEY: 'PK',
+        PARTITION_KEY: 'PK',
         TABLE_NAME: dynamoTable.tableName,
       },
     });

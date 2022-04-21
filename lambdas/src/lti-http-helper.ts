@@ -9,12 +9,12 @@ export class APIGatewayProxyHttpHelper {
     * @returns string value, undefined if not found
     */
     static ValueFromRequest(req: APIGatewayProxyEvent, key: string): string {
-        if (req?.queryStringParameters?.[key]) {
-            return (req.queryStringParameters?.[key] as string);
+        if (req?.queryStringParameters && (key in req?.queryStringParameters)) {
+            return req.queryStringParameters?.[key] ?? "";
         } else if (req?.body) {
             var body = JSON.parse(req.body);
-            if (body?.[key]) {
-                return body?.[key];
+            if (key in body) {
+                return body?.[key] ?? "";
             }
         }
         return "";

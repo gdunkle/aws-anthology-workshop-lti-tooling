@@ -3,6 +3,26 @@
         {
             "type": "aws-sam",
             "request": "direct-invoke",
+            "name": "lambdas:src/lti-launch.handler (nodejs14.x)",
+            "invokeTarget": {
+                "target": "code",
+                "projectRoot": "${workspaceFolder}/lambdas",
+                "lambdaHandler": "src/lti-launch.handler"
+            },
+            "lambda": {
+                "runtime": "nodejs14.x",
+                "payload": {
+                    "path": "${workspaceFolder}/lambdas/payloads/launch.json"
+                },
+                "environmentVariables": {
+                    "TABLE_NAME": "LTIToolCdkStack-ltitableE0BA8EA2-DTWJ84TFS0O2",
+                    "PARTITION_KEY": "PK"
+                }
+            }
+        },
+        {
+            "type": "aws-sam",
+            "request": "direct-invoke",
             "name": "lambdas:src/lti-platform-register.handler (nodejs14.x)",
             "invokeTarget": {
                 "target": "code",
@@ -11,8 +31,13 @@
             },
             "lambda": {
                 "runtime": "nodejs14.x",
-                "payload": {},
-                "environmentVariables": {}
+                "payload": {
+                    "path": "${workspaceFolder}/lambdas/payloads/platform.json"
+                },
+                "environmentVariables": {
+                    "TABLE_NAME": "LTIToolCdkStack-ltitableE0BA8EA2-DTWJ84TFS0O2",
+                    "PARTITION_KEY": "PK"
+                }
             }
         },
         {
@@ -26,8 +51,14 @@
             },
             "lambda": {
                 "runtime": "nodejs14.x",
-                "payload": {},
-                "environmentVariables": {}
+                "payload": {
+                    "path": "${workspaceFolder}/lambdas/payloads/oidc.json"
+                },
+                "environmentVariables": {
+                    "TABLE_NAME": "LTIToolCdkStack-ltitableE0BA8EA2-DTWJ84TFS0O2",
+                    "PARTITION_KEY": "PK",
+                    "STATE_TTL": "7200"
+                }
             }
         }
     ]

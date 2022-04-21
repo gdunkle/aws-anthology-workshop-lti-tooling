@@ -6,10 +6,10 @@ import { APIGatewayProxyHttpHelper } from "./lti-http-helper";
 
 const db = new AWS.DynamoDB.DocumentClient();
 const TABLE_NAME = process.env.TABLE_NAME || '';
-const PRIMARY_KEY = process.env.PRIMARY_KEY || '';
+const PARTITION_KEY = process.env.PARTITION_KEY || '';
 
 const platformStorage: LTIPlatformStorage = {
-  PrimaryKey: PRIMARY_KEY,
+  PartitionKey: PARTITION_KEY,
   TableName: TABLE_NAME,
   DDBClient: db
 };
@@ -18,7 +18,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
   console.info("EVENT\n" + JSON.stringify(event, null, 2));
 
   let config: LTIPlatformConfig = {
-    [PRIMARY_KEY]: "",
+    PK: "",
     auth_token_url: APIGatewayProxyHttpHelper.ValueFromRequest(event, "auth_token_url"),
     auth_login_url: APIGatewayProxyHttpHelper.ValueFromRequest(event, "auth_login_url"),
     client_id: APIGatewayProxyHttpHelper.ValueFromRequest(event, "client_id"),
@@ -36,19 +36,17 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
 
   try {
 
-    //Instantiate a new platform instance with the required input pararm
-    let platform: LTIPlatform = new LTIPlatform(platformStorage, config);
-    //Persist to storage and return value from storage
-    let ret = (await platform.save() as LTIPlatformConfig);
+    //Instantiate a new platform instance with the required input pararms and persist to storage
+    let platform = await new LTIPlatform(platformStorage, config).save();
 
-    //Return a JSON representation of the Configuration, omitting the PK property as that should not be exposed.
+    //Return a JSON representation of the Configuration
     return {
       statusCode: 200,
-      body: JSON.stringify(config as Omit<LTIPlatformConfig, "PK">),
+      body: JSON.stringify(config),
     };
 
   } catch (error) {
-    return { statusCode: 500, body: JSON.stringify(error) };
+    return { statusCode: 500, body: JSON.stringify((error as Error).message) };
   }
 };
 
