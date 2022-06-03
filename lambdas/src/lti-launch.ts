@@ -1,8 +1,7 @@
 import * as AWS from 'aws-sdk';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-import jwt from "jsonwebtoken";
-import { JwtRsaVerifier } from "aws-jwt-verify";
-import { LTIPlatform,  LTIPlatformStorage } from './lti-platform';
+import * as jose from 'jose';
+import { LTIPlatform, LTIPlatformStorage } from './lti-platform';
 import { APIGatewayProxyHttpHelper } from './lti-http-helper';
 import { LTIState, LTIStateStorage } from './lti-state';
 import { LTIJwtPayload } from './lti-jwt';
@@ -28,39 +27,36 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
   console.info("EVENT\n" + JSON.stringify(event, null, 2));
 
   try {
-  //Validate the request as per IMS standards: state and id_token
-  //ref: https://www.imsglobal.org/spec/security/v1p0/#step-3-authentication-response
-  //ref: https://www.imsglobal.org/spec/security/v1p0/#authentication-response-validation 
+    //Validate the request as per IMS standards: state and id_token
+    //ref: https://www.imsglobal.org/spec/security/v1p0/#step-3-authentication-response
+    //ref: https://www.imsglobal.org/spec/security/v1p0/#authentication-response-validation 
 
-  //State from Cookie
-  let request_cookie_state = APIGatewayProxyHttpHelper.ValueFromCookies(event.headers, "state");
-  let request_post_state = APIGatewayProxyHttpHelper.ValueFromRequest(event, "state");
-  if (request_cookie_state !== request_post_state) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify("InvalidParameterException - State Mismatch")
-    };
-  }
+    //State from Cookie
+    let request_cookie_state = APIGatewayProxyHttpHelper.ValueFromCookies(event.headers, "state");
+    let request_post_state = APIGatewayProxyHttpHelper.ValueFromRequest(event, "state");
+    if (request_cookie_state !== request_post_state) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify("InvalidParameterException - State Mismatch")
+      };
+    }
 
-  //Retrieve the id_token, validate the signature, then validate the elements
-  let id_token = APIGatewayProxyHttpHelper.ValueFromRequest(event, "id_token");
-  let jwt_request = new LTIJwtPayload(id_token);
-
-
-
+    //Retrieve the id_token, validate the signature, then validate the elements
+    let id_token = APIGatewayProxyHttpHelper.ValueFromRequest(event, "id_token");
+    let jwt_request = new LTIJwtPayload(id_token);
+    //Load the config for this deployment to pull the public key set.
     let config = (await new LTIPlatform(platformStorage).load(jwt_request.aud, jwt_request.iss, jwt_request.deployment_id));
 
-    // jwt.verify("", )
-    // foo.validate
+    //Inject this into the LTIJwtPayload class.
+    const JWKS = jose.createRemoteJWKSet(new URL((config as LTIPlatform).key_set_url))
 
-    // const verifier = JwtRsaVerifier.create({
-    //   issuer: jwt_request.iss, // set this to the expected "iss" claim on your JWTs, should be issuer
-    //   audience: jwt_request.aud, // set this to the expected "aud" claim on your JWTs, shiould be client_id
-    //   jwksUri: config?.key_set_url, // set this to the JWKS uri from your OpenID configuration "https://example.com/.well-known/jwks.json"
-    // });
+    const { payload, protectedHeader } = await jose.jwtVerify(jwt_request.token, JWKS, {
+      issuer: jwt_request.iss,
+      audience: jwt_request.aud
+    })
+    console.log(protectedHeader)
+    console.log(payload)
 
-    //const payload = await verifier.verify(jwt_request.token);
-    //console.log("Token is valid. Payload:", payload);
 
 
     //pull state from cookie, compare it against known states

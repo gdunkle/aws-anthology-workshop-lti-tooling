@@ -38,7 +38,7 @@ export class LTIJwtPayload {
         return this._payload?.aud ?? "";
     }
     get deployment_id(): string {
-        return this._payload?.deployment_id ?? "";
+        return this._payload?.["https://purl.imsglobal.org/spec/lti/claim/deployment_id"] ?? "";
     }
     get nonce(): string {
         return this._payload?.nonce ?? "";

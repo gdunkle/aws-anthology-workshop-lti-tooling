@@ -26,9 +26,9 @@ export class APIGatewayProxyHttpHelper {
     * @returns list of cookies found
     */
     static CookiesFromHeaders(headers: APIGatewayProxyEventHeaders) {
-        if (headers?.Cookie === undefined) { return {}; }
+        if (headers?.cookie === undefined) { return {}; }
         let list = {},
-            rc = headers.Cookie;
+            rc = headers.cookie;
 
         rc && rc.split(';').forEach(function (cookie) {
             let parts = cookie.split('=');
@@ -48,17 +48,17 @@ export class APIGatewayProxyHttpHelper {
     * @returns string value, undefined if not found
     */
     static ValueFromCookies(headers: APIGatewayProxyEventHeaders, key: string): string {
-        if (headers?.Cookie === undefined) { return ""; }
-        let rc = headers.Cookie;
+        if (headers?.cookie === undefined) { return ""; }
+        let rc = headers.cookie;
 
-        rc && rc.split(';').forEach(function (cookie) {
+        for(var cookie of rc.split(';')) {
             let parts = cookie.split('=');
             let ckey = (parts as any)?.shift().trim();
             let value = decodeURI(parts.join('='));
             if (ckey = key) {
                 return value;
             }
-        });
+        }
         return "";
     };
 };

@@ -104,7 +104,7 @@ export class LTIToolCdkStack extends Stack {
     //permissions
     dynamoTable.grantReadWriteData(lambdaOIDC);
     dynamoTable.grantWriteData(lambdaPlatformRegister);
-    //Causes Circular Dependency, manually construct an inline policy and attach it to the execution role.
+    //Causes circular dependency, manually construct an inline policy and attach it to the execution role.
     //paramAPIURL.grantRead(lambdaOIDC);
     const policy = new Policy(this, "lti-tooling-lambda-read-ssm", {
       policyName: "lti_tooling_lambda_read_ssm",
