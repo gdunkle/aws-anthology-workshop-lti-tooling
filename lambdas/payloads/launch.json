@@ -1,0 +1,78 @@
+{
+    "version": "1.0",
+    "resource": "/my/path",
+    "path": "/my/path",
+    "httpMethod": "GET",
+    "headers": {
+      "cookie": "state=77b59cb6-aec2-4acb-854a-98d4a82cefbb;",
+      "header2": "value2"
+    },
+    "multiValueHeaders": {
+      "header1": [
+        "value1"
+      ],
+      "header2": [
+        "value1",
+        "value2"
+      ]
+    },
+    "queryStringParameters": {
+    },
+    "multiValueQueryStringParameters": {
+      "parameter1": [
+        "value1",
+        "value2"
+      ],
+      "parameter2": [
+        "value"
+      ]
+    },
+    "requestContext": {
+      "accountId": "123456789012",
+      "apiId": "id",
+      "authorizer": {
+        "claims": null,
+        "scopes": null
+      },
+      "domainName": "id.execute-api.us-east-1.amazonaws.com",
+      "domainPrefix": "id",
+      "extendedRequestId": "request-id",
+      "httpMethod": "GET",
+      "identity": {
+        "accessKey": null,
+        "accountId": null,
+        "caller": null,
+        "cognitoAuthenticationProvider": null,
+        "cognitoAuthenticationType": null,
+        "cognitoIdentityId": null,
+        "cognitoIdentityPoolId": null,
+        "principalOrgId": null,
+        "sourceIp": "IP",
+        "user": null,
+        "userAgent": "user-agent",
+        "userArn": null,
+        "clientCert": {
+          "clientCertPem": "CERT_CONTENT",
+          "subjectDN": "www.example.com",
+          "issuerDN": "Example issuer",
+          "serialNumber": "a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1",
+          "validity": {
+            "notBefore": "May 28 12:30:02 2019 GMT",
+            "notAfter": "Aug  5 09:36:04 2021 GMT"
+          }
+        }
+      },
+      "path": "/my/path",
+      "protocol": "HTTP/1.1",
+      "requestId": "id=",
+      "requestTime": "04/Mar/2020:19:15:17 +0000",
+      "requestTimeEpoch": 1583349317135,
+      "resourceId": null,
+      "resourcePath": "/my/path",
+      "stage": "$default"
+    },
+    "pathParameters": null,
+    "stageVariables": null,
+    "body": "{\"state\": \"77b59cb6-aec2-4acb-854a-98d4a82cefbb\",\"id_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2JsYWNrYm9hcmQuY29tIiwic3ViIjoiYTZkNWM0NDMtMWY1MS00NzgzLWJhMWEtNzY4NmZmZTNiNTRhIiwiYXVkIjpbIjEyMzQiLCI5NjJmYTRkOC1iY2JmLTQ5YTAtOTRiMi0yZGUwNWFkMjc0YWYiXSwiZXhwIjoxNjUwNDc3OTMwLCJpYXQiOjE1MTAxODUyMjgsImF6cCI6Ijk2MmZhNGQ4LWJjYmYtNDlhMC05NGIyLTJkZTA1YWQyNzRhZiIsIm5vbmNlIjoiZGY0NWY0ODEtYmFkYS00YzcyLTk5MmYtZjJmMTEyYTk4NDc1IiwibmFtZSI6Ik1zIEphbmUgTWFyaWUgRG9lIiwiZ2l2ZW5fbmFtZSI6IkphbmUiLCJmYW1pbHlfbmFtZSI6IkRvZSIsIm1pZGRsZV9uYW1lIjoiTWFyaWUiLCJwaWN0dXJlIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlLmVkdS9qYW5lLmpwZyIsImVtYWlsIjoiamFuZUBwbGF0Zm9ybS5leGFtcGxlLmVkdSIsImxvY2FsZSI6ImVuLVVTIiwiaHR0cHM6Ly9wdXJsLmltc2dsb2JhbC5vcmcvc3BlYy9sdGkvY2xhaW0vZGVwbG95bWVudF9pZCI6IjQ1NjciLCJodHRwczovL3B1cmwuaW1zZ2xvYmFsLm9yZy9zcGVjL2x0aS9jbGFpbS9tZXNzYWdlX3R5cGUiOiJMdGlSZXNvdXJjZUxpbmtSZXF1ZXN0IiwiaHR0cHM6Ly9wdXJsLmltc2dsb2JhbC5vcmcvc3BlYy9sdGkvY2xhaW0vdmVyc2lvbiI6IjEuMy4wIiwiaHR0cHM6Ly9wdXJsLmltc2dsb2JhbC5vcmcvc3BlYy9sdGkvY2xhaW0vcm9sZXMiOlsiaHR0cDovL3B1cmwuaW1zZ2xvYmFsLm9yZy92b2NhYi9saXMvdjIvaW5zdGl0dXRpb24vcGVyc29uI1N0dWRlbnQiLCJodHRwOi8vcHVybC5pbXNnbG9iYWwub3JnL3ZvY2FiL2xpcy92Mi9tZW1iZXJzaGlwI0xlYXJuZXIiLCJodHRwOi8vcHVybC5pbXNnbG9iYWwub3JnL3ZvY2FiL2xpcy92Mi9tZW1iZXJzaGlwI01lbnRvciJdLCJodHRwczovL3B1cmwuaW1zZ2xvYmFsLm9yZy9zcGVjL2x0aS9jbGFpbS9yb2xlX3Njb3BlX21lbnRvciI6WyJmYWQ1ZmIyOS1hOTFjLTc3MC0zYzExMC0xZTY4NzEyMGVmZDkiLCI1ZDczNzNkZS1jNzZjLWUyYi0wMTIxNC02OWU0ODdlMmJkMzMiLCJkNzc5Y2ZkNC1iYzdiLTAxOS05YmYxYS0wNGJmMTkxNWQ0ZDAiXSwiaHR0cHM6Ly9wdXJsLmltc2dsb2JhbC5vcmcvc3BlYy9sdGkvY2xhaW0vY29udGV4dCI6eyJpZCI6ImMxZDg4N2YwLWExYTMtNGJjYS1hZTI1LWMzNzVlZGNjMTMxYSIsImxhYmVsIjoiRUNPTiAxMDEwIiwidGl0bGUiOiJFY29ub21pY3MgYXMgYSBTb2NpYWwgU2NpZW5jZSIsInR5cGUiOlsiaHR0cDovL3B1cmwuaW1zZ2xvYmFsLm9yZy92b2NhYi9saXMvdjIvY291cnNlI0NvdXJzZU9mZmVyaW5nIl19LCJodHRwczovL3B1cmwuaW1zZ2xvYmFsLm9yZy9zcGVjL2x0aS9jbGFpbS9yZXNvdXJjZV9saW5rIjp7ImlkIjoiMjAwZDEwMWYtMmMxNC00MzRhLWEwZjMtNTdjMmE0MjM2OWZkIiwiZGVzY3JpcHRpb24iOiJBc3NpZ25tZW50IHRvIGludHJvZHVjZSB3aG8geW91IGFyZSIsInRpdGxlIjoiSW50cm9kdWN0aW9uIEFzc2lnbm1lbnQifSwiaHR0cHM6Ly9wdXJsLmltc2dsb2JhbC5vcmcvc3BlYy9sdGkvY2xhaW0vdG9vbF9wbGF0Zm9ybSI6eyJndWlkIjoiZXgvNDhiYmI1NDEtY2U1NS00NTZlLThiN2QtZWJjNTlhMzhkNDM1IiwiY29udGFjdF9lbWFpbCI6InN1cHBvcnRAcGxhdGZvcm0uZXhhbXBsZS5lZHUiLCJkZXNjcmlwdGlvbiI6IkFuIEV4YW1wbGUgVG9vbCBQbGF0Zm9ybSIsIm5hbWUiOiJFeGFtcGxlIFRvb2wgUGxhdGZvcm0iLCJ1cmwiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUuZWR1IiwicHJvZHVjdF9mYW1pbHlfY29kZSI6IkV4YW1wbGVQbGF0Zm9ybVZlbmRvci1Qcm9kdWN0IiwidmVyc2lvbiI6IjEuMCJ9LCJodHRwczovL3B1cmwuaW1zZ2xvYmFsLm9yZy9zcGVjL2x0aS9jbGFpbS90YXJnZXRfbGlua191cmkiOiJodHRwczovL3Rvb2wuZXhhbXBsZS5jb20vbHRpLzQ4MzIwL3J1aXg4NzgycnMiLCJodHRwczovL3B1cmwuaW1zZ2xvYmFsLm9yZy9zcGVjL2x0aS9jbGFpbS9sYXVuY2hfcHJlc2VudGF0aW9uIjp7ImRvY3VtZW50X3RhcmdldCI6ImlmcmFtZSIsImhlaWdodCI6MzIwLCJ3aWR0aCI6MjQwLCJyZXR1cm5fdXJsIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlLmVkdS90ZXJtcy8yMDE2MDEvY291cnNlcy83L3NlY3Rpb25zLzEvcmVzb3VyY2VzLzIifSwiaHR0cHM6Ly9wdXJsLmltc2dsb2JhbC5vcmcvc3BlYy9sdGkvY2xhaW0vY3VzdG9tIjp7InhzdGFydCI6IjIwMTctMDQtMjFUMDE6MDA6MDBaIiwicmVxdWVzdF91cmwiOiJodHRwczovL3Rvb2wuY29tL2xpbmsvMTIzIn0sImh0dHBzOi8vcHVybC5pbXNnbG9iYWwub3JnL3NwZWMvbHRpL2NsYWltL2xpcyI6eyJwZXJzb25fc291cmNlZGlkIjoiZXhhbXBsZS5lZHU6NzFlZTdlNDItZjZkMi00MTRhLTgwZGItYjY5YWMyZGVmZDQiLCJjb3Vyc2Vfb2ZmZXJpbmdfc291cmNlZGlkIjoiZXhhbXBsZS5lZHU6U0kxODItRjE2IiwiY291cnNlX3NlY3Rpb25fc291cmNlZGlkIjoiZXhhbXBsZS5lZHU6U0kxODItMDAxLUYxNiJ9LCJodHRwOi8vd3d3LkV4YW1wbGVQbGF0Zm9ybVZlbmRvci5jb20vc2Vzc2lvbiI6eyJpZCI6Ijg5MDIzc2o4OTBkanUwODAifX0.XbQ3ojT51EA4ejvWBwUT9IUatyBpCkMAUh_wUhyKiso\"}",
+    "isBase64Encoded": false
+  }

@@ -6,16 +6,15 @@
   "private": true,
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
-  "main": "index.js",
   "scripts": {
     "start": "npm run start -w client ",
-    "build": "npm run build -w client && npm run build -w lambda && npm run build -w cdk",
+    "build": "npm run build -w client && npm run build -w lambdas && npm run build -w cdk",
     "cdk": "npm run cdk -w cdk"
   },
   "workspaces": [
     "cdk",
     "client",
-    "lambda"
+    "lambdas"
   ],
   "repository": {
     "type": "git",
@@ -27,13 +26,17 @@
   "homepage": "https://github.com/gdunkle/aws-anthology-workshop-lti-tooling#readme",
   "dependencies": {
     "aws-sdk": "^2.1098.0",
-    "formik": "^2.2.9"
+    "formik": "^2.2.9",
+    "jose": "^4.8.1",
+    "pem-jwk": "^2.0.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.93",
+    "@types/aws-lambda": "^8.10.94",
     "@types/jest": "^27.4.1",
     "@types/node": "^17.0.22",
     "@types/ramda": "^0.28.2",
+    "@types/uuid": "^8.3.4",
     "jest": "^27.5.1",
     "prettier": "^2.6.0",
     "ts-jest": "^27.1.3",
