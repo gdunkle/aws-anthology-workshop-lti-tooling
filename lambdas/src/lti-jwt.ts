@@ -1,4 +1,5 @@
 
+
 interface jwtPayload {
     iss: string, //issuer
     aud: string, // client_id
@@ -17,11 +18,19 @@ export class LTIJwtPayload {
         this._token = token;
         let parts: string[] = token.split('.');
 
-        if (parts.length == 3) throw new Error("InvalidParameterException");
-
-        this._header = JSON.parse(Buffer.from(parts?.[0], 'base64').toString());
-        this._payload = JSON.parse(Buffer.from(parts?.[1], 'base64').toString());
-        this._signature = JSON.parse(Buffer.from(parts?.[2], 'base64').toString());
+        if (parts.length != 3) {
+            console.error(`Invalid token: ${this._token} - Length: ${parts.length}`)
+            throw new Error("InvalidParameterException");
+        }
+        const header=Buffer.from(parts[0], 'base64').toString()
+        const payload=Buffer.from(parts[1], 'base64').toString()
+        const signature=Buffer.from(parts[2], 'base64').toString()
+        console.info(`header=${header}`)
+        console.info(`payload=${payload}`)
+        console.info(`signature=${signature}`)
+        this._header = JSON.parse(header).toString();
+        this._payload = JSON.parse(payload).toString();
+        this._signature = signature;
         console.log(this._header);
         console.log(this._payload);
         console.log(this._signature);

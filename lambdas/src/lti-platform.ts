@@ -84,11 +84,11 @@ export class LTIPlatform {
 
                 return this;
             } else {
-                console.log(`No PlatformConfig record found for CONFIG#${client_id}#${iss}#${lti_deployment_id}.`);
+                console.warn(`No PlatformConfig record found for CONFIG#${client_id}#${iss}#${lti_deployment_id}.`);
                 return;
             }
         } catch (error) {
-            console.log(`Error retrieving PlatformConfig for CONFIG#${client_id}#${iss}#${lti_deployment_id}. ${JSON.stringify(error)}`);
+            console.error(`Error retrieving PlatformConfig for CONFIG#${client_id}#${iss}#${lti_deployment_id}. ${JSON.stringify(error)}`);
             throw new Error(`Error retrieving PlatformConfig for CONFIG#${client_id}#${iss}#${lti_deployment_id}. ${JSON.stringify(error)}`);
         }
     }
@@ -112,7 +112,7 @@ export class LTIPlatform {
             await this._storage.DDBClient.put(configParams).promise();
             return this;
         } catch (error) {
-            console.log(`Error persisting PlatformConfig for ${this._config.PK}. ${JSON.stringify(error)}`);
+            console.error(`Error persisting PlatformConfig for ${this._config.PK}. ${JSON.stringify(error)}`);
             throw new Error("Error persisting PlatformConfig. " + JSON.stringify(error));
         }
     }

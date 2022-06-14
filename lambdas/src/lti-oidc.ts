@@ -37,6 +37,8 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
 
   //As per LTI1.3, validate required paramaters
   if(!client_id || !iss || !lti_message_hint ||!login_hint || !target_link_uri){
+    console.log(`client_id=${client_id},lti_message_hint=${lti_message_hint},iss=${iss},login_hint=${login_hint},target_link_uri=${target_link_uri}`)
+
     return { 
       statusCode: 400, 
       body: JSON.stringify("InvalidParameterException")
