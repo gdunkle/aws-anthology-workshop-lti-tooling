@@ -52,18 +52,20 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     let request_cookie_state = APIGatewayProxyHttpHelper.ValueFromCookies(event.headers, "state");
     let request_post_state = APIGatewayProxyHttpHelper.ValueFromRequest(event, "state");
     if (request_cookie_state !== request_post_state) {
+      console.error(`InvalidParameterException - State Mismatch: ${request_cookie_state}!=${request_post_state}`)
       return {
         statusCode: 400,
         body: JSON.stringify("InvalidParameterException - State Mismatch")
       };
     }
-    
+
     //pull state from cookie, compare it against known states
     let state = (await new LTIState(stateStorage).load(request_cookie_state));
     //TODO: pull from id_token
     let request_nonce = jwt_request.nonce;
     //Verify nonce hasn't been used again (replay protection)
     if (!await (state as LTIState).validate(request_nonce)) {
+      console.warn("Could not validate state")
       return {
         statusCode: 400,
         body: JSON.stringify("InvalidParameterException - State Mismatch")
@@ -81,6 +83,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     let target_link_uri = APIGatewayProxyHttpHelper.ValueFromRequest(event, "target_link_uri");
 
     if (!client_id || !lti_deployment_id || !iss || !lti_message_hint || !login_hint || !target_link_uri) {
+      console.info(`client_id=${client_id},lti_deployment_id=${lti_deployment_id},iss=${iss},lti_message_hint=${lti_message_hint},login_hint=${login_hint},target_link_uri=${target_link_uri}`)
       return {
         statusCode: 400,
         body: JSON.stringify("InvalidParameterException")
@@ -89,10 +92,11 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
 
     return {
       statusCode: 200,
-      body: JSON.stringify("NotImplemented")
+      body: JSON.stringify("Success but redirect not implemented")
     };
 
   } catch (error) {
+    console.error(error)
     return { statusCode: 500, body: JSON.stringify((error as Error).message) };
   }
 };

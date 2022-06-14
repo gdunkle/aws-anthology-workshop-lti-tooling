@@ -44,6 +44,7 @@ export class LTIState {
     */
     async validate(nonce: string): Promise<boolean> {
         if (!this._record.id || !nonce) {
+            console.error(`this._record.id=${this._record.id},nonce=${nonce} `)
             throw new Error("InvalidParameterException");
         }
 

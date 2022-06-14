@@ -85,10 +85,10 @@ export class LTIToolCdkStack extends Stack {
       allowOrigins: ["*"],
       allowMethods: ["GET", "PUT"]
     });
-
-    apiLTI.root.addResource("login")
-      .addMethod("POST", new LambdaIntegration(lambdaOIDC));
-
+    const loginLambdaIntegration=new LambdaIntegration(lambdaOIDC)
+    const loginResoruce=apiLTI.root.addResource("login")
+    loginResoruce.addMethod("POST", loginLambdaIntegration);
+    loginResoruce.addMethod("GET", loginLambdaIntegration);
     apiLTI.root.addResource("lti13")
       .addMethod("POST", new LambdaIntegration(lambdaLTILaunch));
     
