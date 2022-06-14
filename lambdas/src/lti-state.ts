@@ -54,11 +54,6 @@ export class LTIState {
                 [this._storage.PartitionKey]: `STATE#${this.id}`,
             },
             ConditionExpression: `(nonce = ${nonce}) AND nonce_count = 0`,
-            // KeyConditionExpression: 'artist = :artist AND begins_with ( song , :song )',
-            // ExpressionAttributeValues: {
-            //     ':artist': 'Arturus Ardvarkian',
-            //     ':song': 'C'
-            // },
         };
 
         try {

@@ -31,17 +31,6 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     //ref: https://www.imsglobal.org/spec/security/v1p0/#step-3-authentication-response
     //ref: https://www.imsglobal.org/spec/security/v1p0/#authentication-response-validation 
 
-    //State from Cookie
-    let request_cookie_state = APIGatewayProxyHttpHelper.ValueFromCookies(event.headers, "state");
-    let request_post_state = APIGatewayProxyHttpHelper.ValueFromRequest(event, "state");
-    if (request_cookie_state !== request_post_state) {
-      console.error(`InvalidParameterException - State Mismatch: ${request_cookie_state}!=${request_post_state}`)
-      return {
-        statusCode: 400,
-        body: JSON.stringify("InvalidParameterException - State Mismatch")
-      };
-    }
-
     //Retrieve the id_token, validate the signature, then validate the elements
     let id_token = APIGatewayProxyHttpHelper.ValueFromRequest(event, "id_token");
     let jwt_request = new LTIJwtPayload(id_token);
@@ -59,6 +48,16 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     console.log(payload)
 
 
+    //State from Cookie
+    let request_cookie_state = APIGatewayProxyHttpHelper.ValueFromCookies(event.headers, "state");
+    let request_post_state = APIGatewayProxyHttpHelper.ValueFromRequest(event, "state");
+    if (request_cookie_state !== request_post_state) {
+      console.error(`InvalidParameterException - State Mismatch: ${request_cookie_state}!=${request_post_state}`)
+      return {
+        statusCode: 400,
+        body: JSON.stringify("InvalidParameterException - State Mismatch")
+      };
+    }
 
     //pull state from cookie, compare it against known states
     let state = (await new LTIState(stateStorage).load(request_cookie_state));
