@@ -28,13 +28,9 @@ export class LTIJwtPayload {
         console.info(`header=${header}`)
         console.info(`payload=${payload}`)
         console.info(`signature=${signature}`)
-        this._header = JSON.parse(header).toString();
-        this._payload = JSON.parse(payload).toString();
+        this._header = JSON.parse(header);
+        this._payload = JSON.parse(payload);
         this._signature = signature;
-        console.log(this._header);
-        console.log(this._payload);
-        console.log(this._signature);
-        console.log("got it");
     }
 
     get token(): string {

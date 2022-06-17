@@ -32,9 +32,9 @@ export class APIGatewayProxyHttpHelper {
     * @returns list of cookies found
     */
     static CookiesFromHeaders(headers: APIGatewayProxyEventHeaders) {
-        if (headers?.cookie === undefined) { return {}; }
+        if (headers?.Cookie === undefined) { return {}; }
         let list = {},
-            rc = headers.cookie;
+            rc = headers.Cookie;
 
         rc && rc.split(';').forEach(function (cookie) {
             let parts = cookie.split('=');
